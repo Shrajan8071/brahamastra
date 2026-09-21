@@ -1,0 +1,80 @@
+:root {
+    --bg-color: #000000;
+    --text-color: #A8ADB5;
+    --font-family: 'Inter', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    font-weight: 200;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#clock-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3vw;
+}
+
+#time {
+    font-size: clamp(3rem, 10vw, 10rem);
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+}
+
+#ampm {
+    font-size: clamp(1rem, 3vw, 3rem);
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    margin-top: 0.5em; /* Minor alignment adjustment */
+}
+
+#fullscreen-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    padding: 10px;
+    z-index: 10;
+}
+
+#fullscreen-btn svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+body.show-controls #fullscreen-btn {
+    opacity: 1;
+}
+
+#fullscreen-btn:hover svg {
+    opacity: 1;
+}
