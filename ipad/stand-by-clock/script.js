@@ -5,6 +5,7 @@ const fullscreenIcon = document.getElementById('fullscreen-icon');
 const exitFullscreenIcon = document.getElementById('exit-fullscreen-icon');
 const body = document.body;
 
+let wakeLock = null;
 let controlsTimeout;
 
 function updateClock() {
@@ -58,12 +59,49 @@ function toggleFullscreen() {
 
 fullscreenBtn.addEventListener('click', toggleFullscreen);
 
-document.addEventListener('fullscreenchange', () => {
+// Request a screen wake lock when entering fullscreen and release when exiting
+async function requestWakeLock() {
+    if (!('wakeLock' in navigator)) {
+        console.warn('Screen Wake Lock API not supported.');
+        return;
+    }
+    try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => {
+            console.log('Wake lock released');
+            wakeLock = null;
+        });
+        console.log('Wake lock active');
+    } catch (err) {
+        console.error('Failed to acquire wake lock:', err);
+    }
+}
+
+async function releaseWakeLock() {
+    if (wakeLock) {
+        try {
+            await wakeLock.release();
+        } catch (err) {
+            console.error('Error releasing wake lock:', err);
+        }
+        wakeLock = null;
+    }
+}
+
+document.addEventListener('fullscreenchange', async () => {
     if (document.fullscreenElement) {
         fullscreenIcon.style.display = 'none';
         exitFullscreenIcon.style.display = 'block';
+        await requestWakeLock();
     } else {
         fullscreenIcon.style.display = 'block';
         exitFullscreenIcon.style.display = 'none';
+        await releaseWakeLock();
+    }
+});
+
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && document.fullscreenElement && !wakeLock) {
+        await requestWakeLock();
     }
 });
